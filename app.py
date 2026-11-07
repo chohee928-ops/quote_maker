@@ -147,6 +147,9 @@ with st.sidebar:
     else:
         st.caption(f"모델: `{cfg.claude_model}`")
 
+    if cfg.warnings:
+        st.error(f"⚙️ 설정 문제 {len(cfg.warnings)}건 — Settings 화면에서 확인하세요.")
+
 catalog, load_error = get_catalog()
 
 
@@ -623,6 +626,12 @@ elif page == "Quotation Preview":
 # ----------------------------------------------------------------- Settings
 else:
     st.header("Settings / Connection Status")
+
+    if cfg.warnings:
+        st.error("설정값에 문제가 있습니다. `.env` 를 확인하세요.", icon="⚙️")
+        for warning in cfg.warnings:
+            st.write("•", warning)
+        st.divider()
 
     st.subheader("연결 상태")
     rows = [
