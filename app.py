@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import streamlit as st
 
+from core.ai import AIError, parse_inquiry
 from core.config import get_config
 from core.datasource import DataSourceError, load_catalog
 
@@ -28,6 +29,14 @@ STEPS = [
     "견적 검토",
     "PDF 다운로드",
 ]
+
+# 구현이 끝난 단계 수 (STEPS 기준). 단계를 완성할 때마다 올린다.
+STEPS_DONE = 2
+
+SAMPLE_INQUIRY = """안녕하세요. 모니터 20대, 키보드 30개,
+무선 마우스 30개가 필요합니다.
+다음 주까지 납품 가능한지 확인해 주시고
+견적 부탁드립니다."""
 
 
 def vnd(amount: float) -> str:
@@ -96,7 +105,7 @@ if page == "Dashboard":
     cols = st.columns(len(STEPS))
     for col, (index, label) in zip(cols, enumerate(STEPS, start=1)):
         col.markdown(f"**{index}. {label}**")
-        col.caption("준비" if index == 1 else "다음 단계")
+        col.caption("✅ 사용 가능" if index <= STEPS_DONE else "🚧 구현 예정")
 
     if len(low_stock):
         st.divider()
@@ -173,13 +182,87 @@ elif page == "Settings / Connection":
         "API 키는 화면과 로그에 전체가 출력되지 않습니다."
     )
 
+elif page == "New Quotation":
+    st.header("New Quotation")
+
+    cols = st.columns(len(STEPS))
+    for col, (index, label) in zip(cols, enumerate(STEPS, start=1)):
+        col.markdown(f"**{index}. {label}**" if index <= STEPS_DONE else f"{index}. {label}")
+        col.caption("" if index <= STEPS_DONE else "구현 예정")
+    st.divider()
+
+    st.subheader("1. 고객 문의 입력")
+    if st.button("예시 문의 채우기"):
+        st.session_state["inquiry_text"] = SAMPLE_INQUIRY
+
+    inquiry = st.text_area(
+        "고객이 보낸 문의 내용",
+        key="inquiry_text",
+        height=160,
+        placeholder="예: 모니터 20대, 키보드 30개가 필요합니다. 다음 주까지 납품 가능한가요?",
+    )
+
+    if st.button("AI로 분석하기", type="primary", disabled=not inquiry.strip()):
+        try:
+            with st.spinner("Claude가 문의를 분석하는 중..."):
+                st.session_state["parsed"] = parse_inquiry(inquiry)
+        except AIError as exc:
+            st.session_state.pop("parsed", None)
+            st.error(str(exc))
+
+    parsed = st.session_state.get("parsed")
+    if parsed:
+        st.divider()
+        st.subheader("2. AI 요청 분석 결과")
+        if parsed.is_mock:
+            st.warning("🧪 **MOCK 결과** — Claude API를 호출하지 않은 고정 예시입니다.", icon="🧪")
+        else:
+            st.success(f"🤖 **실제 Claude API 결과** · 감지 언어: `{parsed.language}`", icon="🤖")
+
+        if parsed.items:
+            st.dataframe(
+                [
+                    {
+                        "상품명 (AI 추출)": item.product_term,
+                        "수량": item.quantity,
+                        "고객 원문": item.quoted_text,
+                    }
+                    for item in parsed.items
+                ],
+                hide_index=True,
+                width="stretch",
+            )
+        else:
+            st.info("수량이 명시된 상품을 찾지 못했습니다.", icon="ℹ️")
+
+        col_left, col_right = st.columns(2)
+        with col_left:
+            st.markdown("**요청 납기 (고객 표현)**")
+            if parsed.requested_delivery_text:
+                st.write(f"> {parsed.requested_delivery_text}")
+                st.caption("⚠️ 고객이 쓴 표현을 그대로 옮긴 것입니다. 확정 납기가 아닙니다.")
+            else:
+                st.caption("납기 언급 없음")
+        with col_right:
+            st.markdown("**기타 요구사항**")
+            if parsed.customer_notes:
+                for note in parsed.customer_notes:
+                    st.write("•", note)
+            else:
+                st.caption("없음")
+
+        if parsed.warnings:
+            for warning in parsed.warnings:
+                st.caption(f"⚠️ {warning}")
+
+        st.divider()
+        st.info(
+            "다음 단계(상품 자동 매칭)에서 이 결과를 Products 데이터와 연결합니다. "
+            "AI는 상품명과 수량만 추출하며, 가격·재고·납기는 만들어내지 않습니다.",
+            icon="🚧",
+        )
+
 else:
     st.header(page)
-    st.info(
-        {
-            "New Quotation": "3단계(AI 문의 분석)부터 구현합니다.",
-            "Quotation Preview": "7단계(견적 검토 화면)에서 구현합니다.",
-        }[page],
-        icon="🚧",
-    )
-    st.caption("지금은 Dashboard, Product Search, Settings / Connection 을 사용할 수 있습니다.")
+    st.info("7단계(견적 검토 화면)에서 구현합니다.", icon="🚧")
+    st.caption("지금은 Dashboard, New Quotation, Product Search, Settings 를 사용할 수 있습니다.")

@@ -24,7 +24,7 @@ class Config:
     service_account_file: str
     mock_ai: bool
     anthropic_api_key: str
-    claude_model: str
+    claude_model: str = "claude-opus-5-5"
 
     @property
     def sheets_ready(self) -> bool:

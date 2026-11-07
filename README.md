@@ -1,19 +1,22 @@
-# AI Quote Maker (1단계)
+# AI Quote Maker
+
+[![tests](https://img.shields.io/badge/tests-22%20passed-brightgreen)](tests/)
 
 베트남 B2B 사무용품 유통사를 가정한 AI 견적서 자동 생성 도구.
 고객의 자연어 문의 → 상품 매칭 → 금액 계산 → PDF 견적서.
 
-## 지금 돌아가는 것 (1단계 완료분)
+## 지금 돌아가는 것
 
 | 화면 | 상태 |
 | --- | --- |
-| Dashboard | ✅ 상품/고객 수, 재고 주의 상품 |
+| Dashboard | ✅ 상품/고객 수, 재고 주의 상품, 진행 현황 |
+| New Quotation | ✅ 문의 입력 → Claude 구조화 분석 (상품명·수량·납기 표현) |
 | Product Search | ✅ 상품명·카테고리 검색 |
 | Settings / Connection | ✅ 연결 상태, 회사 정보, 데이터 다시 읽기 |
-| New Quotation | 🚧 3단계 |
 | Quotation Preview | 🚧 7단계 |
 
-API 키 없이 바로 실행됩니다 (`DATA_SOURCE=csv`, `MOCK_AI=true`).
+API 키 없이도 실행됩니다 (`DATA_SOURCE=csv`, `MOCK_AI=true`). Mock 결과는 화면에
+🧪 배지로 실제 API 결과와 구분됩니다.
 
 ## 실행 방법
 
@@ -42,7 +45,8 @@ streamlit run app.py
 pytest -q
 ```
 
-데이터 검증 로직 8개 + 화면 렌더링 5개, 총 13개.
+데이터 검증 8개 + AI 추출 검증 9개 + 화면 렌더링 5개, 총 22개.
+테스트는 실제 Claude API를 호출하지 않습니다 (비용·속도·재현성).
 
 ## 폴더 구조
 
@@ -51,7 +55,8 @@ quote_maker/
 ├─ app.py                 Streamlit 화면 (여기에는 계산 로직을 두지 않는다)
 ├─ core/
 │  ├─ config.py           .env 읽기, API 키 마스킹
-│  └─ datasource.py       상품/고객/설정 읽기 + 데이터 검증
+│  ├─ datasource.py       상품/고객/설정 읽기 + 데이터 검증
+│  └─ ai.py               Claude 구조화 출력으로 문의 분석
 ├─ data/                  가상 데이터 (Google Sheets 연결 전 테스트용)
 │  ├─ products.csv
 │  ├─ customers.csv
@@ -114,17 +119,24 @@ import 하지 않습니다.
 
 시트는 **읽기 전용**으로만 사용합니다 (쓰기 코드를 두지 않습니다).
 
-## Claude API 연결 (3단계에서 진행)
+## Claude API 연결 ✅
 
 1. [console.anthropic.com](https://console.anthropic.com) → API Keys → 키 발급
 2. `.env` 수정:
    ```
    MOCK_AI=false
    ANTHROPIC_API_KEY=sk-ant-...
+   CLAUDE_MODEL=claude-opus-5-5     # 비용을 줄이려면 claude-sonnet-5-5
    ```
 
-`MOCK_AI=true` 면 API 호출 없이 가짜 응답으로 전체 흐름을 연습할 수 있고,
+`MOCK_AI=true` 면 API 호출 없이 고정 예시로 전체 흐름을 연습할 수 있고,
 화면에 🧪 **MOCK 모드** 배지가 표시됩니다.
+
+### AI에게 맡기지 않는 것
+
+`core/ai.py` 의 추출 스키마에는 **가격·재고·할인·세금 필드가 없습니다.** 구조적으로
+AI가 금액을 만들어낼 수 없습니다. 납기도 고객이 쓴 표현을 그대로 옮기며 실제 날짜로
+변환하지 않습니다. 모든 금액 계산은 Python 코드가 수행합니다.
 
 ## 보안
 
@@ -132,12 +144,12 @@ import 하지 않습니다.
 - API 키는 화면에 앞 7자 + 뒤 4자만 표시합니다 (`core/config.py` 의 `masked_key`).
 - Google Sheets 연결 오류는 예외 타입만 보여줍니다 (토큰이 메시지에 섞여 나오는 것을 막기 위함).
 
-## 다음 단계
+## 개발 진행 상황
 
 1. ~~프로젝트 골격 + 가상 데이터~~ ✅
-2. Google Sheets 실제 연결
-3. Claude API로 문의 → JSON 구조화
-4. 상품 매칭 + 재고 비교
+2. ~~Claude API로 문의 → JSON 구조화~~ ✅
+3. Google Sheets 실제 연결 — ⏸️ 스프레드시트를 Google Sheets 형식으로 변환 필요
+4. 상품 매칭 + 재고 비교 ← **다음**
 5. 가격 계산 (할인 → 세금 순서)
 6. 견적 검토 화면
 7. PDF 생성 + 이메일 초안 (한/영/베)
