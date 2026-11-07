@@ -5,16 +5,18 @@
 """
 import pytest
 
+from core import config as config_module
 from core.config import get_config
 
 
 @pytest.fixture
-def env(monkeypatch):
-    """모든 관련 환경변수를 지운 깨끗한 상태에서 시작한다."""
+def env(monkeypatch, tmp_path):
+    """환경변수를 모두 지우고, 프로젝트의 실제 .env 도 보지 않게 한다."""
     for key in ("DATA_SOURCE", "MOCK_AI", "ANTHROPIC_API_KEY", "GOOGLE_SHEETS_ID",
                 "GOOGLE_SERVICE_ACCOUNT_FILE", "GOOGLE_SERVICE_ACCOUNT_JSON",
                 "CLAUDE_MODEL"):
         monkeypatch.delenv(key, raising=False)
+    monkeypatch.setattr(config_module, "ENV_FILE", tmp_path / ".env")
     return monkeypatch
 
 
@@ -102,3 +104,33 @@ def test_service_account_json_counts_as_credentials(env):
     cfg = get_config()
     assert cfg.has_service_account is True
     assert cfg.sheets_ready is True
+
+
+def test_env_file_is_read_when_no_environment_variable(env, tmp_path):
+    """.env 만 있어도 설정이 적용된다 (load_dotenv 없이도)."""
+    (tmp_path / ".env").write_text("MOCK_AI=false\nANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxx\n", encoding="utf-8")
+    cfg = get_config()
+    assert cfg.mock_ai is False
+    assert cfg.warnings == ()
+
+
+def test_editing_env_file_takes_effect_without_restart(env, tmp_path):
+    """실행 중에 .env 를 고치면 다음 호출에서 바로 반영된다.
+
+    예전에는 load_dotenv 가 import 시점에 한 번만 돌아서, MOCK_AI 를 false 로
+    고쳐도 앱을 재시작하기 전까지 MOCK 배지가 계속 떴다.
+    """
+    env_file = tmp_path / ".env"
+    env_file.write_text("MOCK_AI=true\n", encoding="utf-8")
+    assert get_config().mock_ai is True
+
+    env_file.write_text("MOCK_AI=false\nANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxx\n", encoding="utf-8")
+    assert get_config().mock_ai is False
+
+
+def test_environment_variable_beats_env_file(env, tmp_path):
+    """배포 환경(Streamlit Secrets 등)의 설정이 .env 보다 우선한다."""
+    (tmp_path / ".env").write_text("DATA_SOURCE=csv\n", encoding="utf-8")
+    env.setenv("DATA_SOURCE", "sheets")
+    env.setenv("GOOGLE_SHEETS_ID", "abc123")
+    assert get_config().data_source == "sheets"

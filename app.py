@@ -18,7 +18,7 @@ def _load_streamlit_secrets() -> None:
 
     core/ 는 streamlit 을 import 하지 않아야 하므로, 화면 쪽에서 secrets 를
     환경변수로 옮겨주고 core/config.py 는 평소처럼 os.getenv 만 쓴다.
-    이미 설정된 환경변수는 덮어쓰지 않는다 (로컬 .env 가 우선).
+    이미 설정된 OS 환경변수는 덮어쓰지 않는다. (.env 는 core/config.py 가 직접 읽는다)
     """
     try:
         secrets = st.secrets

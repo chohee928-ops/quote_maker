@@ -87,6 +87,25 @@ def _read_csv() -> tuple[pd.DataFrame, pd.DataFrame, dict[str, str]]:
     return products, customers, settings
 
 
+def _sheets_error_message(exc: Exception) -> str:
+    """연결 실패 이유를 사용자 말로 바꾼다.
+
+    원문 메시지에는 키나 토큰이 섞여 나올 수 있어 그대로 보여주지 않는다.
+    단, .xlsx 파일을 가리켰을 때는 공유 권한 문제로 오해하기 쉬워 따로 안내한다.
+    """
+    if "must not be an Office file" in str(exc):
+        return (
+            "이 파일은 엑셀(.xlsx) 파일이라 Google Sheets API 가 읽을 수 없습니다. "
+            "Drive 에서 파일을 열고 [파일 > Google Sheets로 저장] 을 누른 뒤, "
+            "새로 만들어진 파일의 ID 를 GOOGLE_SHEETS_ID 에 넣어주세요. "
+            "(또는 .env 의 DATA_SOURCE 를 csv 로 두면 로컬 데이터로 바로 쓸 수 있습니다)"
+        )
+    return (
+        "Google Sheets 연결 실패: {}. 스프레드시트를 서비스 계정 이메일에 "
+        "'보기' 권한으로 공유했는지, 시트 ID가 맞는지 확인하세요.".format(type(exc).__name__)
+    )
+
+
 def _read_sheets(cfg: Config) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, str]]:
     if not cfg.sheets_id:
         raise DataSourceError("GOOGLE_SHEETS_ID 가 .env 에 설정되지 않았습니다.")
@@ -120,12 +139,7 @@ def _read_sheets(cfg: Config) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, str
             "README의 Google Sheets 설정 안내를 따라주세요.".format(cfg.service_account_file)
         ) from exc
     except Exception as exc:
-        # 인증/권한/네트워크 오류. 원문 메시지에 키나 토큰이 섞여 나올 수 있어
-        # 예외 타입만 노출한다.
-        raise DataSourceError(
-            "Google Sheets 연결 실패: {}. 스프레드시트를 서비스 계정 이메일에 "
-            "'보기' 권한으로 공유했는지, 시트 ID가 맞는지 확인하세요.".format(type(exc).__name__)
-        ) from exc
+        raise DataSourceError(_sheets_error_message(exc)) from exc
 
     def tab(name: str) -> list[dict]:
         try:

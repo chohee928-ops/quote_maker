@@ -1,7 +1,12 @@
 """환경변수 로딩. 비밀값은 .env 에만 두고 코드에 넣지 않는다.
 
 설정값이 오타여도 조용히 넘어가지 않는다. 예를 들어 MOCK_AI=sheets 처럼
-엉뚱한 값이 들어오면 false 로 처리하면서 경고를 남기고, 화면에 표시한다.
+엉뚱한 값이 들어오면 기본값으로 처리하면서 경고를 남기고, 화면에 표시한다.
+
+.env 는 get_config() 가 호출될 때마다 다시 읽는다. load_dotenv 로 os.environ 에
+한 번만 옮겨 담으면, 실행 중에 .env 를 고쳐도 앱을 완전히 재시작하기 전까지
+옛 값이 그대로 남아 (예: MOCK 모드 배지가 계속 보인다) 혼란을 준다.
+우선순위는 OS 환경변수 > .env 파일 (배포 환경의 설정이 항상 이긴다).
 """
 from __future__ import annotations
 
@@ -9,12 +14,11 @@ import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from dotenv import load_dotenv
+from dotenv import dotenv_values
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
-
-load_dotenv(PROJECT_ROOT / ".env")
+ENV_FILE = PROJECT_ROOT / ".env"      # 테스트는 이 경로를 다른 곳으로 바꿔 쓴다
 
 TRUE_WORDS = ("1", "true", "yes", "y", "on")
 FALSE_WORDS = ("0", "false", "no", "n", "off", "")
@@ -53,11 +57,23 @@ class Config:
         return f"{key[:7]}...{key[-4:]}" if len(key) > 12 else "(설정됨)"
 
 
-def _flag(name: str, default: str, warnings: list[str]) -> bool:
-    """true/false 로 해석한다. 해석할 수 없는 값은 경고를 남기고 기본값을 쓴다."""
+def _read_env_file() -> dict[str, str]:
+    if not ENV_FILE.exists():
+        return {}
+    return {k: v for k, v in dotenv_values(ENV_FILE).items() if v is not None}
+
+
+def _value(name: str, file_values: dict[str, str], default: str = "") -> str:
+    """OS 환경변수가 우선, 없으면 .env 파일, 둘 다 없으면 기본값."""
     raw = os.getenv(name)
     if raw is None:
-        raw = default
+        raw = file_values.get(name)
+    return default if raw is None else raw
+
+
+def _flag(name: str, default: str, warnings: list[str], file_values: dict[str, str]) -> bool:
+    """true/false 로 해석한다. 해석할 수 없는 값은 경고를 남기고 기본값을 쓴다."""
+    raw = _value(name, file_values, default)
     text = raw.strip().lower()
     if text in TRUE_WORDS:
         return True
@@ -72,8 +88,9 @@ def _flag(name: str, default: str, warnings: list[str]) -> bool:
 
 def get_config() -> Config:
     warnings: list[str] = []
+    file_values = _read_env_file()
 
-    raw_source = os.getenv("DATA_SOURCE", "csv").strip().lower()
+    raw_source = _value("DATA_SOURCE", file_values, "csv").strip().lower()
     if raw_source in VALID_SOURCES:
         source = raw_source
     else:
@@ -83,13 +100,13 @@ def get_config() -> Config:
         )
         source = "csv"
 
-    mock_ai = _flag("MOCK_AI", "true", warnings)
-    api_key = os.getenv("ANTHROPIC_API_KEY", "").strip()
-    sheets_id = os.getenv("GOOGLE_SHEETS_ID", "").strip()
-    account_file = os.getenv(
-        "GOOGLE_SERVICE_ACCOUNT_FILE", "credentials/service_account.json"
+    mock_ai = _flag("MOCK_AI", "true", warnings, file_values)
+    api_key = _value("ANTHROPIC_API_KEY", file_values).strip()
+    sheets_id = _value("GOOGLE_SHEETS_ID", file_values).strip()
+    account_file = _value(
+        "GOOGLE_SERVICE_ACCOUNT_FILE", file_values, "credentials/service_account.json"
     ).strip()
-    account_json = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON", "")
+    account_json = _value("GOOGLE_SERVICE_ACCOUNT_JSON", file_values)
 
     if not mock_ai and not api_key:
         warnings.append(
@@ -107,7 +124,7 @@ def get_config() -> Config:
         service_account_file=account_file,
         mock_ai=mock_ai,
         anthropic_api_key=api_key,
-        claude_model=os.getenv("CLAUDE_MODEL", "claude-opus-5-5").strip(),
+        claude_model=_value("CLAUDE_MODEL", file_values, "claude-opus-5-5").strip(),
         service_account_json=account_json,
         warnings=tuple(warnings),
     )

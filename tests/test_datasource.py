@@ -112,3 +112,15 @@ def test_real_csv_loads_cleanly():
     assert len(catalog.active_products()) == 33
     # 재고 0 상품(P025)도 데이터에는 남아 있어야 한다 (매칭에서 경고로 쓴다)
     assert (catalog.products["stock_quantity"] == 0).sum() == 1
+
+
+def test_xlsx_file_gets_its_own_explanation():
+    """.xlsx 를 가리키면 공유 권한 문제로 오해하지 않게 따로 안내한다."""
+    from core.datasource import _sheets_error_message
+
+    msg = _sheets_error_message(
+        RuntimeError("APIError: [400]: This operation is not supported for this "
+                     "document. The document must not be an Office file.")
+    )
+    assert "Google Sheets로 저장" in msg
+    assert "보기' 권한" not in msg
