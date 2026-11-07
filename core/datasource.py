@@ -98,8 +98,22 @@ def _read_sheets(cfg: Config) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, str
         ) from exc
 
     try:
-        client = gspread.service_account(filename=cfg.service_account_file)
+        if cfg.service_account_json.strip():
+            # Streamlit Cloud 에는 키 파일을 올릴 수 없어 Secrets 에 JSON 문자열로 넣는다.
+            import json
+            try:
+                info = json.loads(cfg.service_account_json)
+            except json.JSONDecodeError as exc:
+                raise DataSourceError(
+                    "GOOGLE_SERVICE_ACCOUNT_JSON 이 올바른 JSON 이 아닙니다. "
+                    "서비스 계정 키 파일 내용을 그대로 넣어주세요."
+                ) from exc
+            client = gspread.service_account_from_dict(info)
+        else:
+            client = gspread.service_account(filename=cfg.service_account_file)
         book = client.open_by_key(cfg.sheets_id)
+    except DataSourceError:
+        raise
     except FileNotFoundError as exc:
         raise DataSourceError(
             "서비스 계정 키 파일이 없습니다: {}\n"

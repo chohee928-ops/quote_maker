@@ -25,10 +25,16 @@ class Config:
     mock_ai: bool
     anthropic_api_key: str
     claude_model: str = "claude-opus-5-5"
+    service_account_json: str = ""   # Streamlit Cloud 용: 파일 대신 JSON 문자열
+
+    @property
+    def has_service_account(self) -> bool:
+        """키 파일이 있거나, JSON 문자열이 주어졌으면 인증할 수 있다."""
+        return bool(self.service_account_json.strip()) or Path(self.service_account_file).exists()
 
     @property
     def sheets_ready(self) -> bool:
-        return bool(self.sheets_id) and Path(self.service_account_file).exists()
+        return bool(self.sheets_id) and self.has_service_account
 
     @property
     def claude_ready(self) -> bool:
@@ -53,4 +59,5 @@ def get_config() -> Config:
         mock_ai=_flag("MOCK_AI", "true"),
         anthropic_api_key=os.getenv("ANTHROPIC_API_KEY", "").strip(),
         claude_model=os.getenv("CLAUDE_MODEL", "claude-opus-5-5").strip(),
+        service_account_json=os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON", ""),
     )

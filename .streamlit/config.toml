@@ -1,0 +1,13 @@
+[theme]
+primaryColor = "#1D4ED8"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F5F7FA"
+textColor = "#1F2933"
+font = "sans serif"
+
+[server]
+# 업로드 기능을 쓰지 않으므로 작게 유지한다.
+maxUploadSize = 5
+
+[browser]
+gatherUsageStats = false

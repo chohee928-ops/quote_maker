@@ -1,7 +1,9 @@
 customer_id,company_name,contact_name,email,customer_tier,discount_rate
-C-001,Saigon Tech Solutions JSC,Nguyen Van An,an.nguyen@saigontech.vn,GOLD,0.10
-C-002,Hanoi Trading Co. Ltd,Tran Thi Mai,mai.tran@hanoitrading.vn,SILVER,0.05
-C-003,Mekong Logistics Corp,Le Hoang Nam,nam.le@mekonglog.vn,BRONZE,0.02
-C-004,Da Nang Furniture Export,Pham Minh Tuan,tuan.pham@dnfurniture.vn,SILVER,0.05
-C-005,VietFood Manufacturing JSC,Hoang Thuy Linh,linh.hoang@vietfood.vn,GOLD,0.10
-C-006,BinhDuong Industrial Park Mgmt,Vo Quoc Bao,bao.vo@bdip.vn,BRONZE,0.00
+C001,"Saigon Tech Solutions Co., Ltd.",Nguyen Van Minh,minh.nguyen@saigontech.vn,VIP,0.1
+C002,Hanoi Office Supplies JSC,Tran Thi Lan,lan.tran@hanoioffice.vn,Gold,0.07
+C003,"Daewoo Vina Co., Ltd.",김재훈,jh.kim@daewoovina.com.vn,VIP,0.1
+C004,"Mekong Logistics Co., Ltd.",Le Hoang Nam,nam.le@mekonglog.vn,Silver,0.03
+C005,Bình Dương Garment JSC,Phạm Thị Hương,huong.pham@bdgarment.vn,Gold,0.07
+C006,FPT Software Danang Branch,Vu Quang Huy,huy.vu@fptsw.vn,Silver,0.03
+C007,Lotte Mart Vietnam,박민서,ms.park@lottemart.vn,VIP,0.1
+C008,Can Tho Trading Co.,Dang Van Tuan,tuan.dang@canthotrading.vn,Standard,0

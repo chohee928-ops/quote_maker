@@ -1,8 +1,7 @@
 key,value
-company_name,ASIA OFFICE SUPPLY CO. LTD
-company_address,"12 Nguyen Hue Blvd, District 1, Ho Chi Minh City, Vietnam"
-company_email,sales@asiaoffice.vn
-company_phone,+84 28 3822 1234
+company_name,"ANB Office Solutions Co., Ltd."
+company_address,"123 Nguyễn Huệ, District 1, Ho Chi Minh City, Vietnam"
+company_email,sales@anb-office.vn
 quotation_valid_days,14
 default_currency,VND
-tax_rate,0.08
+tax_rate,0.1

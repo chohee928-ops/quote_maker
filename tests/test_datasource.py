@@ -103,10 +103,12 @@ def test_real_csv_loads_cleanly():
         mock_ai=True, anthropic_api_key="",
     )
     catalog = load_catalog(cfg)
-    assert len(catalog.products) >= 15
-    assert len(catalog.customers) >= 5
-    assert catalog.tax_rate == 0.08
+    assert len(catalog.products) == 34
+    assert len(catalog.customers) == 8
+    assert catalog.tax_rate == 0.1
     assert catalog.valid_days == 14
     assert catalog.warnings == [], catalog.warnings
-    # 비활성 상품 1개는 목록에 남아 있지만 active_products 에서는 빠진다
-    assert len(catalog.active_products()) == len(catalog.products) - 1
+    # P003 (단종) 1개는 목록에 남아 있지만 active_products 에서는 빠진다
+    assert len(catalog.active_products()) == 33
+    # 재고 0 상품(P025)도 데이터에는 남아 있어야 한다 (매칭에서 경고로 쓴다)
+    assert (catalog.products["stock_quantity"] == 0).sum() == 1

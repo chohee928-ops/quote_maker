@@ -3,6 +3,7 @@
 credentials/
 *credential*.json
 service_account*.json
+.streamlit/secrets.toml
 
 # Python
 __pycache__/
@@ -14,3 +15,6 @@ venv/
 # 생성물
 output/
 *.pdf
+
+# 폰트는 커밋합니다 (배포에 필요)
+!assets/fonts/*.ttf

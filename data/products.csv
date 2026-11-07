@@ -1,19 +1,35 @@
 product_id,product_name,category,unit_price,cost_price,stock_quantity,currency,active
-P-1001,Monitor 24 inch FHD,Monitor,3200000,2450000,45,VND,TRUE
-P-1002,Monitor 27 inch QHD,Monitor,5900000,4600000,12,VND,TRUE
-P-1003,Monitor 32 inch 4K,Monitor,9800000,7900000,4,VND,TRUE
-P-1010,Wireless Keyboard,Keyboard,420000,310000,80,VND,TRUE
-P-1011,Wired Keyboard,Keyboard,210000,145000,150,VND,TRUE
-P-1012,Mechanical Keyboard,Keyboard,1150000,880000,18,VND,TRUE
-P-1020,Wireless Mouse,Mouse,280000,195000,25,VND,TRUE
-P-1021,Wired Mouse,Mouse,120000,78000,200,VND,TRUE
-P-1022,Ergonomic Vertical Mouse,Mouse,650000,480000,9,VND,TRUE
-P-1030,Laser Printer A4 Mono,Printer,4700000,3800000,7,VND,TRUE
-P-1031,Inkjet Printer Color A4,Printer,2900000,2250000,15,VND,TRUE
-P-1040,A4 Copy Paper 80gsm Ream,Paper,78000,59000,620,VND,TRUE
-P-1041,A3 Copy Paper 80gsm Ream,Paper,156000,121000,90,VND,TRUE
-P-1050,Office Chair Mesh Mid-back,Furniture,1850000,1380000,33,VND,TRUE
-P-1051,Office Desk 120x60,Furniture,2400000,1820000,16,VND,TRUE
-P-1060,USB-C Docking Station,Accessory,1680000,1290000,22,VND,TRUE
-P-1061,Headset USB Noise-cancelling,Accessory,890000,640000,41,VND,TRUE
-P-1070,Laser Printer A3 Mono,Printer,12500000,10100000,0,VND,FALSE
+P001,Monitor 24 inch FHD IPS,Electronics,2850000,2280000,45,VND,TRUE
+P002,Monitor 27 inch QHD IPS,Electronics,4650000,3720000,18,VND,TRUE
+P003,Monitor 22 inch HD (discontinued),Electronics,1950000,1700000,5,VND,FALSE
+P004,Keyboard Wired USB,Electronics,185000,132000,220,VND,TRUE
+P005,Keyboard Wireless,Electronics,420000,310000,85,VND,TRUE
+P006,Keyboard Mechanical RGB,Electronics,1150000,850000,32,VND,TRUE
+P007,Mouse Wireless,Electronics,165000,115000,18,VND,TRUE
+P008,Mouse Wired USB,Electronics,95000,62000,310,VND,TRUE
+P009,Laptop Stand Aluminum,Electronics,390000,270000,60,VND,TRUE
+P010,USB-C Hub 7-in-1,Electronics,680000,480000,42,VND,TRUE
+P011,Webcam 1080p,Electronics,850000,600000,25,VND,TRUE
+P012,Headset USB Noise Cancelling,Electronics,1250000,890000,30,VND,TRUE
+P013,Power Strip 6 Outlet 3m,Electronics,210000,140000,150,VND,TRUE
+P014,External SSD 1TB,Electronics,1980000,1620000,22,VND,TRUE
+P015,Desk Lamp LED,Electronics,450000,310000,70,VND,TRUE
+P016,A4 Paper 70gsm (ream 500),Paper,78000,62000,480,VND,TRUE
+P017,A4 Paper 80gsm (ream 500),Paper,92000,73000,350,VND,TRUE
+P018,A3 Paper 80gsm (ream 500),Paper,185000,148000,90,VND,TRUE
+P019,Toner Cartridge HP 85A,Paper,1450000,1150000,35,VND,TRUE
+P020,Ink Cartridge Canon Black,Paper,320000,240000,60,VND,TRUE
+P021,Thermal Receipt Paper 80mm (box 50),Paper,420000,320000,40,VND,TRUE
+P022,Ballpoint Pen Blue (box 50),Stationery,145000,98000,200,VND,TRUE
+P023,Gel Pen Black (box 12),Stationery,96000,64000,180,VND,TRUE
+P024,Highlighter Set 5 colors,Stationery,68000,44000,240,VND,TRUE
+P025,Whiteboard Marker (box 12),Stationery,132000,88000,0,VND,TRUE
+P026,Stapler Medium with 1000 staples,Stationery,85000,55000,130,VND,TRUE
+P027,Sticky Notes 76x76mm (pack 12),Stationery,112000,72000,260,VND,TRUE
+P028,Document File A4 (pack 10),Stationery,78000,50000,320,VND,TRUE
+P029,Paper Clip Box (1000 pcs),Stationery,35000,20000,400,VND,TRUE
+P030,Office Chair Mesh Ergonomic,Furniture,2350000,1750000,28,VND,TRUE
+P031,Office Desk 120x60cm,Furniture,2800000,2100000,15,VND,TRUE
+P032,Filing Cabinet 4 Drawer,Furniture,3200000,2450000,9,VND,TRUE
+P033,Whiteboard 120x90cm,Furniture,980000,700000,24,VND,TRUE
+P034,Paper Shredder 10-sheet,Furniture,2650000,2000000,6,VND,TRUE
