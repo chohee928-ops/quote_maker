@@ -1,0 +1,19 @@
+product_id,product_name,category,unit_price,cost_price,stock_quantity,currency,active
+P-1001,Monitor 24 inch FHD,Monitor,3200000,2450000,45,VND,TRUE
+P-1002,Monitor 27 inch QHD,Monitor,5900000,4600000,12,VND,TRUE
+P-1003,Monitor 32 inch 4K,Monitor,9800000,7900000,4,VND,TRUE
+P-1010,Wireless Keyboard,Keyboard,420000,310000,80,VND,TRUE
+P-1011,Wired Keyboard,Keyboard,210000,145000,150,VND,TRUE
+P-1012,Mechanical Keyboard,Keyboard,1150000,880000,18,VND,TRUE
+P-1020,Wireless Mouse,Mouse,280000,195000,25,VND,TRUE
+P-1021,Wired Mouse,Mouse,120000,78000,200,VND,TRUE
+P-1022,Ergonomic Vertical Mouse,Mouse,650000,480000,9,VND,TRUE
+P-1030,Laser Printer A4 Mono,Printer,4700000,3800000,7,VND,TRUE
+P-1031,Inkjet Printer Color A4,Printer,2900000,2250000,15,VND,TRUE
+P-1040,A4 Copy Paper 80gsm Ream,Paper,78000,59000,620,VND,TRUE
+P-1041,A3 Copy Paper 80gsm Ream,Paper,156000,121000,90,VND,TRUE
+P-1050,Office Chair Mesh Mid-back,Furniture,1850000,1380000,33,VND,TRUE
+P-1051,Office Desk 120x60,Furniture,2400000,1820000,16,VND,TRUE
+P-1060,USB-C Docking Station,Accessory,1680000,1290000,22,VND,TRUE
+P-1061,Headset USB Noise-cancelling,Accessory,890000,640000,41,VND,TRUE
+P-1070,Laser Printer A3 Mono,Printer,12500000,10100000,0,VND,FALSE

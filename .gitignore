@@ -1,0 +1,16 @@
+# 비밀 정보 - 절대 커밋하지 마세요
+.env
+credentials/
+*credential*.json
+service_account*.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# 생성물
+output/
+*.pdf
